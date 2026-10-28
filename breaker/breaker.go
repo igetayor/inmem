@@ -57,7 +57,7 @@ func NewCircuitBreaker(maxFailures int, resetTimeout time.Duration) *CircuitBrea
 	return &CircuitBreaker{
 		state:           StateClosed,
 		maxFailures:     maxFailures,
-		halfOpenProbes:  2,
+		halfOpenProbes:  1,
 		resetTimeout:    resetTimeout,
 		lastStateChange: time.Now(),
 	}
@@ -170,4 +170,14 @@ func (cb *CircuitBreaker) Reset() {
 	cb.failureCount = 0
 	cb.consecutiveSuccess = 0
 	cb.lastStateChange = time.Now()
+}
+
+// GetState returns the current operational state of the circuit breaker.
+func (cb *CircuitBreaker) GetState() State {
+	cb.mu.RLock()
+	defer cb.mu.RUnlock()
+	if cb.state == StateOpen && time.Since(cb.lastFailure) >= cb.resetTimeout {
+		return StateHalfOpen
+	}
+	return cb.state
 }
