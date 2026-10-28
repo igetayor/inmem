@@ -3,139 +3,90 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ige In-Memory Circuit Breaker & Fallback Registry</title>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg: #0b1120;
-      --card: #131d33;
-      --border: #223255;
-      --accent: #38bdf8;
-      --closed: #10b981;
-      --open: #ef4444;
-      --half: #f59e0b;
-      --text: #f8fafc;
-      --muted: #94a3b8;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      background: var(--bg); color: var(--text); padding: 2.5rem 1rem;
-      display: flex; flex-direction: column; align-items: center; min-height: 100vh;
-    }
-    .container { max-width: 900px; width: 100%; }
-    .badge {
-      display: inline-block; background: rgba(56, 189, 248, 0.15);
-      border: 1px solid rgba(56, 189, 248, 0.35); color: var(--accent);
-      padding: 0.35rem 0.85rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 600;
-      text-transform: uppercase; margin-bottom: 1rem;
-    }
-    h1 { font-size: 2.25rem; font-weight: 700; margin-bottom: 0.5rem; }
-    p.sub { color: var(--muted); font-size: 1.05rem; margin-bottom: 2rem; line-height: 1.6; }
-    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
-    @media(max-width: 768px) { .grid { grid-template-columns: 1fr; } }
-    .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; }
-    .state-banner {
-      padding: 1.5rem; border-radius: 8px; text-align: center; margin-bottom: 1rem;
-      font-weight: 700; font-size: 1.5rem; font-family: 'JetBrains Mono', monospace;
-      background: rgba(16, 185, 129, 0.15); color: var(--closed); border: 1px solid var(--closed);
-    }
-    .btn-group { display: flex; gap: 0.5rem; }
-    button {
-      flex: 1; padding: 0.75rem; border-radius: 8px; font-weight: 600; cursor: pointer; border: none;
-    }
-    .log-box {
-      background: #070c17; border: 1px solid #1a2742; border-radius: 8px;
-      padding: 1rem; height: 220px; overflow-y: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem;
-    }
-  </style>
+  <title>Ige In-Memory Circuit Breaker — Fault Isolation & Resilience</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="static/css/styles.css">
 </head>
 <body>
-  <div class="container">
-    <div class="badge">Go Resiliency & Fault Tolerance</div>
-    <h1>Concurrent Circuit Breaker & Fallback Registry</h1>
-    <p class="sub">In-browser simulation of Go sync.Mutex circuit breaker state machine: CLOSED ➔ OPEN ➔ HALF-OPEN ➔ CLOSED with automatic fallback execution.</p>
-
-    <div class="grid">
-      <div class="card">
-        <h3>Circuit Breaker State</h3>
-        <div id="stateBanner" class="state-banner">CLOSED</div>
-        <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 1rem;">
-          Failure Threshold: 2 consecutive errors.<br>
-          Cool-down window: 3.0s before probe in HALF-OPEN state.
+  <div class="dashboard-container">
+    <!-- Header -->
+    <header class="dashboard-header">
+      <div class="header-brand">
+        <div class="badge-tag">
+          Go System Resilience Engine
+        </div>
+        <h1 class="dashboard-title">In-Memory Circuit Breaker</h1>
+        <p class="dashboard-sub">
+          High-performance concurrency guard preventing downstream cascading failures with atomic state transitions (CLOSED &rarr; OPEN &rarr; HALF-OPEN), automatic probe healing, and fallback invocation.
         </p>
-        <div class="btn-group">
-          <button style="background: #10b981; color: #fff;" onclick="sendRequest(true)">🟢 Call Success</button>
-          <button style="background: #ef4444; color: #fff;" onclick="sendRequest(false)">🔴 Call Failure (503)</button>
-        </div>
       </div>
 
-      <div class="card">
-        <h3>Circuit Activity & Fallback Traces</h3>
-        <div id="traceLog" class="log-box">
-          <div>[System Ready] Circuit initialized in CLOSED state.</div>
-        </div>
+      <div class="header-status-pill">
+        <span style="color: var(--text-dim);">PORT:</span>
+        <span style="color: #34d399; font-weight: 700;">8092</span>
+        <span style="margin: 0 0.25rem; color: var(--border-subtle);">|</span>
+        <span style="color: #38bdf8; font-weight: 600;">ACTIVE</span>
       </div>
-    </div>
+    </header>
+
+    <!-- State Hero Card -->
+    <section id="stateHeroContainer" class="state-hero-card">
+      <!-- Populated dynamically by StateDial.js -->
+    </section>
+
+    <!-- Metrics Ribbon -->
+    <section id="metricsContainer" class="metrics-grid">
+      <!-- Populated dynamically by MetricsCards.js -->
+    </section>
+
+    <!-- Interactive Controls & Logs -->
+    <main class="controls-grid">
+      <!-- Left Panel: Trigger Actions -->
+      <section class="panel-card">
+        <div class="panel-header">
+          <h3>Simulate Downstream Traffic</h3>
+          <span style="font-size: 0.8rem; font-family: var(--font-mono); color: var(--text-dim);">Threshold: 3 failures / 3s cool-down</span>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+          <label style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">Target Downstream Service</label>
+          <select id="serviceName" style="background: var(--bg-surface-elevated); border: 1px solid var(--border-subtle); color: #fff; padding: 0.65rem 0.85rem; border-radius: 6px; font-family: var(--font-sans); outline: none;">
+            <option value="Payment Settlement Gateway">Payment Settlement Gateway</option>
+            <option value="Ledger Accounting Cluster">Ledger Accounting Cluster</option>
+            <option value="KYC Identity Verification RPC">KYC Identity Verification RPC</option>
+          </select>
+        </div>
+
+        <div class="action-bar" style="margin-top: 0.5rem;">
+          <button id="btnSendSuccess" class="btn btn-success">
+            ✔ Send Healthy Request (200 OK)
+          </button>
+          <button id="btnSendFailure" class="btn btn-danger">
+            ✖ Inject Downstream Failure (503)
+          </button>
+        </div>
+
+        <div style="font-size: 0.8rem; color: var(--text-dim); line-height: 1.5; border-top: 1px solid var(--border-subtle); padding-top: 0.75rem;">
+          💡 <strong>Fail-Fast Behavior:</strong> When the failure threshold (3) is reached, subsequent requests are short-circuited in &lt;1&mu;s, shielding downstream services from being overwhelmed.
+        </div>
+      </section>
+
+      <!-- Right Panel: Activity Log -->
+      <section class="panel-card">
+        <div class="panel-header">
+          <h3>Telemetry & Fallback Audit Stream</h3>
+          <span style="font-size: 0.75rem; color: var(--text-dim); font-family: var(--font-mono);">Polling 500ms</span>
+        </div>
+
+        <div id="activityLogContainer" class="log-stream">
+          <!-- Populated dynamically by RequestStream.js -->
+        </div>
+      </section>
+    </main>
   </div>
 
-  <script>
-    let state = "CLOSED";
-    let failures = 0;
-    let coolDownTimer = null;
-
-    function sendRequest(success) {
-      const log = document.getElementById('traceLog');
-      const time = new Date().toLocaleTimeString();
-
-      if (state === "OPEN") {
-        log.innerHTML = `<div style="color: #ef4444;">[${time}] 🚫 REJECTED: Circuit OPEN! (Executed fallback handler)</div>` + log.innerHTML;
-        return;
-      }
-
-      if (success) {
-        failures = 0;
-        if (state === "HALF-OPEN") {
-          state = "CLOSED";
-          log.innerHTML = `<div style="color: #10b981;">[${time}] ⚡ Probe succeeded! Circuit healed back to CLOSED.</div>` + log.innerHTML;
-        } else {
-          log.innerHTML = `<div style="color: #10b981;">[${time}] ✔ Success: Upstream service responded normally.</div>` + log.innerHTML;
-        }
-      } else {
-        failures++;
-        log.innerHTML = `<div style="color: #f59e0b;">[${time}] ⚠️ Failure encountered (Count: ${failures}/2)</div>` + log.innerHTML;
-        if (failures >= 2 || state === "HALF-OPEN") {
-          state = "OPEN";
-          log.innerHTML = `<div style="color: #ef4444; font-weight: bold;">[${time}] 💥 THRESHOLD REACHED! Breaker tripped to OPEN.</div>` + log.innerHTML;
-          clearTimeout(coolDownTimer);
-          coolDownTimer = setTimeout(() => {
-            state = "HALF-OPEN";
-            log.innerHTML = `<div style="color: #f59e0b;">[Cool-Down Elapsed] Transitioned to HALF-OPEN (Testing probe).</div>` + log.innerHTML;
-            updateBanner();
-          }, 3000);
-        }
-      }
-
-      updateBanner();
-    }
-
-    function updateBanner() {
-      const banner = document.getElementById('stateBanner');
-      banner.textContent = state;
-      if (state === "CLOSED") {
-        banner.style.color = "#10b981";
-        banner.style.borderColor = "#10b981";
-        banner.style.background = "rgba(16, 185, 129, 0.15)";
-      } else if (state === "OPEN") {
-        banner.style.color = "#ef4444";
-        banner.style.borderColor = "#ef4444";
-        banner.style.background = "rgba(239, 68, 68, 0.15)";
-      } else {
-        banner.style.color = "#f59e0b";
-        banner.style.borderColor = "#f59e0b";
-        banner.style.background = "rgba(245, 158, 11, 0.15)";
-      }
-    }
-  </script>
+  <script type="module" src="static/js/app.js"></script>
 </body>
 </html>
