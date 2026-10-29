@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Circuit Breaker Console — Fault Isolation & Resilience</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- Header -->
+    <header class="dashboard-header">
+      <div class="header-brand">
+        <div class="header-top-row">
+          <h1 class="dashboard-title">Circuit Breaker & Fallback Registry</h1>
+          <span class="version-pill">PORT 8092</span>
+        </div>
+        <p class="dashboard-sub">
+          In-memory concurrency guard preventing downstream cascading failures with atomic state transitions and automatic recovery probing.
+        </p>
+      </div>
+
+      <div class="header-status-pill">
+        <span class="pulse-dot"></span>
+        <span>DAEMON ONLINE</span>
+      </div>
+    </header>
+
+    <!-- State Hero Card -->
+    <section id="stateHeroContainer" class="state-hero-card">
+      <!-- Populated dynamically by StateDial.js -->
+    </section>
+
+    <!-- Metrics Ribbon -->
+    <section id="metricsContainer" class="metrics-grid">
+      <!-- Populated dynamically by MetricsCards.js -->
+    </section>
+
+    <!-- Interactive Controls & Logs -->
+    <main class="controls-grid">
+      <!-- Left Panel: Trigger Actions -->
+      <section class="panel-card">
+        <div class="panel-header">
+          <h2 class="panel-title">Simulate Downstream Traffic</h2>
+          <span class="panel-subtitle">3 failures / 3s cooldown</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="serviceName">Target Downstream Service</label>
+          <select id="serviceName" class="form-select">
+            <option value="Payment Settlement Gateway">Payment Settlement Gateway</option>
+            <option value="Ledger Accounting Cluster">Ledger Accounting Cluster</option>
+            <option value="KYC Identity Verification RPC">KYC Identity Verification RPC</option>
+          </select>
+        </div>
+
+        <div class="action-bar">
+          <button id="btnSendSuccess" class="btn btn-success">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            Send Healthy Request
+          </button>
+          <button id="btnSendFailure" class="btn btn-danger">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            Inject Failure (503)
+          </button>
+        </div>
+
+        <div class="panel-tip">
+          <strong>Fail-Fast Behavior:</strong> Once consecutive failures reach the threshold (3), subsequent requests are short-circuited in sub-microsecond time, shielding downstream services from resource exhaustion.
+        </div>
+      </section>
+
+      <!-- Right Panel: Activity Log -->
+      <section class="panel-card">
+        <div class="panel-header">
+          <h2 class="panel-title">Telemetry & Audit Stream</h2>
+          <span class="panel-subtitle">Live Poll 500ms</span>
+        </div>
+
+        <div id="activityLogContainer" class="log-stream">
+          <!-- Populated dynamically by RequestStream.js -->
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
